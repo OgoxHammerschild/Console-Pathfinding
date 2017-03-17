@@ -182,31 +182,48 @@ bool Pathfinder::AStar(std::vector<std::vector<Node*>>& graph, Node * start, Nod
 				float heuristic = sqrtf(abs((goal->X - current->X)*(goal->X - current->X) + (goal->Y - current->Y)*(goal->Y - current->Y))); // euclidean
 				//float heuristic = (goal->X - toNode->X) + (goal->Y - toNode->Y); //manhattan
 
-				//
+				// if the node is already on the open list
 				if (toNode->IsOnOpen)
 				{
+					// and if the cost is smaller than last time we checked
 					if (realCost < toNode->RealCost)
 					{
+						// update the node with the new infos
 						toNode->RealCost = realCost;
 						toNode->Heuristic = heuristic;
 						toNode->Parent = current;
+						// and reinsert it in the list in order to resort the list with the new values
 						openList.Reinsert(toNode);
 					}
 					continue;
 				}
-
+				
+				// the node has not been touched before, so it gets filled with information
 				toNode->Parent = current;
 				toNode->IsOnOpen = true;
 				toNode->RealCost = realCost;
 				toNode->Heuristic = heuristic;
+				// the sort type is set to estimate because this is what it's sorted by when using A*
 				toNode->SortType = SortBy::Estimate;
 
+				// the node gets pushed to the open list for further investigations checking whether it's the goal 
+				// or has any neighbors that might be the goal
 				openList.push(*toNode);
 			}
 		}
 	}
 
+	// there is no path
 	return false;
 }
 ```   
 ***   
+
+Further readings:    
+
+* [Dynamic Delegate (C++)](https://ogoxhammerschild.github.io/)   
+* [Component System (C++)](https://ogoxhammerschild.github.io/#Component_System)    
+* [CollisionManager for the MonoGame-Framework (C#)](https://ogoxhammerschild.github.io/Collision/)    
+* [Unreal Examples (C++)](https://ogoxhammerschild.github.io/Unreal-Examples/)   
+
+***    
