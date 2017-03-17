@@ -17,6 +17,7 @@ This console application demonstrates the pathfinding algorithms BreadthFirst, B
 ![astar](https://raw.githubusercontent.com/OgoxHammerschild/Console-Pathfinding/master/docs/images/AStar.PNG)   
 
 # Code   
+***   
 ## Prerequisites   
 In order to perform the pathfinding algorithm some prerequisites are necessary. First, you need a graph with interconnected nodes. The nodes can be connected via edges. In my case I chose not to use edges but to consider all neighboring nodes to be connected with the node I'm currently looking at.   
 Furthermore, I'm using a priority queue as the open list.
@@ -79,6 +80,7 @@ bool Node::operator>(Node const & other) const
 	}
 }
 ```   
+***   
 ### Priority Queue
 I'm using the `std::priority_queue` with two additions for my pathfinding. Because you cannot find and remove elements in/from the `std::priority_queue`, I have added two functions to facilitate this functionality for the purpose of pathfinding.   
 
@@ -95,6 +97,7 @@ public:
 	void Reinsert(Node* node); // remove the 'node' from the queue and push it back in in order to resort the queue
 };
 ```   
+***   
 ## A\*-Algorithm   
 This is my A\* algorithm with comments explaining it step-by-step.
 
@@ -206,3 +209,4 @@ bool Pathfinder::AStar(std::vector<std::vector<Node*>>& graph, Node * start, Nod
 	return false;
 }
 ```   
+***   
