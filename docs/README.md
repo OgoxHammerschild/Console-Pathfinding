@@ -232,6 +232,7 @@ bool Pathfinder::AStar(std::vector<std::vector<Node*>>& graph, Node * start, Nod
 
 Further readings:    
 
+* [Etos Videos](https://ogoxhammerschild.github.io/Etos/)    
 * [Dynamic Delegate (C++)](https://ogoxhammerschild.github.io/)   
 * [Component System (C++)](https://ogoxhammerschild.github.io/#Component_System)    
 * [CollisionManager for the MonoGame-Framework (C#)](https://ogoxhammerschild.github.io/Collision/)    
