@@ -128,7 +128,7 @@ bool Pathfinder::BestFirst(std::vector<std::vector<Node*>>& graph, Node * start,
 				toNode->Parent = current;
 				toNode->SortType = SortBy::Heuristic;
 				toNode->IsOnOpen = true;
-				openList.push(*toNode);
+				openList.push(*toNode); // resorts the priority queue
 			}
 		}
 	}
@@ -194,7 +194,7 @@ bool Pathfinder::Dijkstra(std::vector<std::vector<Node*>>& graph, Node * start, 
 					if (realCost < toNode->RealCost)
 					{
 						toNode->RealCost = realCost;
-						openList.Reinsert(toNode);
+						openList.Reinsert(toNode); // resorts the priority queue
 					}
 					continue;
 				}
@@ -203,7 +203,7 @@ bool Pathfinder::Dijkstra(std::vector<std::vector<Node*>>& graph, Node * start, 
 				toNode->RealCost = realCost;
 				toNode->Parent = current;
 				toNode->SortType = SortBy::RealCost;
-				openList.push(*toNode);
+				openList.push(*toNode); // resorts the priority queue
 			}
 		}
 	}
@@ -274,7 +274,7 @@ bool Pathfinder::AStar(std::vector<std::vector<Node*>>& graph, Node * start, Nod
 						toNode->RealCost = realCost;
 						toNode->Heuristic = heuristic;
 						toNode->Parent = current;
-						openList.Reinsert(toNode);
+						openList.Reinsert(toNode); // resorts the priority queue
 					}
 					continue;
 				}
@@ -285,7 +285,7 @@ bool Pathfinder::AStar(std::vector<std::vector<Node*>>& graph, Node * start, Nod
 				toNode->Heuristic = heuristic;
 				toNode->SortType = SortBy::Estimate;
 
-				openList.push(*toNode);
+				openList.push(*toNode); // resorts the priority queue
 			}
 		}
 	}
