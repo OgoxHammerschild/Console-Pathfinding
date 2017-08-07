@@ -20,7 +20,8 @@ int main()
 
 	map.resize(width);
 
-	srand(time(NULL));
+	//srand(time(NULL));
+	srand(1337);
 
 	for (int x = 0; x < width; x++)
 	{
