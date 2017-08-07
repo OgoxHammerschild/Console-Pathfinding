@@ -15,11 +15,14 @@ bool Pathfinder::BreadthFirst(std::vector<std::vector<Node*>>& graph, Node * sta
 		openList.pop();
 		current->Color = Color::Red;
 
+		current->IsOnOpen = false;
+		closedList.push_back(current);
+
 		if (current == goal)
 		{
 			while (current != nullptr && current != start)
 			{
-				current->Color += Color::PinkBackground;
+				current->Color = Color::IntenseRed + Color::PinkBackground;
 				current = current->Parent;
 			}
 
@@ -45,13 +48,18 @@ bool Pathfinder::BreadthFirst(std::vector<std::vector<Node*>>& graph, Node * sta
 
 				Node* toNode = graph[X][Y];
 
-				if (!toNode->IsWalkable || std::find(closedList.begin(), closedList.end(), toNode) != closedList.end())
+				if (toNode->IsOnOpen || !toNode->IsWalkable)
 				{
 					continue;
 				}
 
-				closedList.push_back(toNode);
+				if (std::find(closedList.begin(), closedList.end(), toNode) != closedList.end())
+				{
+					continue;
+				}
+
 				toNode->Parent = current;
+				toNode->IsOnOpen = true;
 				openList.push(toNode);
 			}
 		}
@@ -73,11 +81,14 @@ bool Pathfinder::BestFirst(std::vector<std::vector<Node*>>& graph, Node * start,
 		openList.pop();
 		current->Color = Color::Red;
 
+		current->IsOnOpen = false;
+		closedList.push_back(current);
+
 		if (current == goal)
 		{
 			while (current != nullptr && current != start)
 			{
-				current->Color += Color::PinkBackground;
+				current->Color = Color::IntenseRed + Color::PinkBackground;
 				current = current->Parent;
 			}
 
@@ -103,16 +114,20 @@ bool Pathfinder::BestFirst(std::vector<std::vector<Node*>>& graph, Node * start,
 
 				Node* toNode = graph[X][Y];
 
-				if (!toNode->IsWalkable || std::find(closedList.begin(), closedList.end(), toNode) != closedList.end())
+				if (toNode->IsOnOpen || !toNode->IsWalkable)
 				{
 					continue;
 				}
 
-				closedList.push_back(toNode);
+				if (std::find(closedList.begin(), closedList.end(), toNode) != closedList.end())
+				{
+					continue;
+				}
 
 				toNode->Heuristic = sqrtf(abs((goal->X - toNode->X) *(goal->X - toNode->X) + (goal->Y - toNode->Y) * (goal->Y - toNode->Y)));
 				toNode->Parent = current;
 				toNode->SortType = SortBy::Heuristic;
+				toNode->IsOnOpen = true;
 				openList.push(*toNode);
 			}
 		}
@@ -135,11 +150,14 @@ bool Pathfinder::Dijkstra(std::vector<std::vector<Node*>>& graph, Node * start, 
 		openList.pop();
 		current->Color = Color::Red;
 
+		current->IsOnOpen = false;
+		closedList.push_back(current);
+
 		if (current == goal)
 		{
 			while (current != nullptr && current != start)
 			{
-				current->Color += Color::PinkBackground;
+				current->Color = Color::IntenseRed + Color::PinkBackground;
 				current = current->Parent;
 			}
 			return true;
@@ -169,9 +187,7 @@ bool Pathfinder::Dijkstra(std::vector<std::vector<Node*>>& graph, Node * start, 
 					continue;
 				}
 
-				closedList.push_back(toNode);
-
-				float realCost = current->RealCost + ((current->X == toNode->X || current->Y == toNode->Y) ? 1 : 1.4f);
+				float realCost = current->RealCost + ((current->X == toNode->X || current->Y == toNode->Y) ? toNode->Cost : toNode->Cost + 0.4f); // with diagonal penalty
 
 				if (toNode->IsOnOpen)
 				{
@@ -184,7 +200,7 @@ bool Pathfinder::Dijkstra(std::vector<std::vector<Node*>>& graph, Node * start, 
 				}
 
 				toNode->IsOnOpen = true;
-					toNode->RealCost = realCost;
+				toNode->RealCost = realCost;
 				toNode->Parent = current;
 				toNode->SortType = SortBy::RealCost;
 				openList.push(*toNode);
@@ -209,11 +225,14 @@ bool Pathfinder::AStar(std::vector<std::vector<Node*>>& graph, Node * start, Nod
 		openList.pop();
 		current->Color = Color::Red;
 
+		current->IsOnOpen = false;
+		closedList.push_back(current);
+
 		if (current == goal)
 		{
 			while (current != nullptr && current != start)
 			{
-				current->Color += Color::PinkBackground;
+				current->Color = Color::IntenseRed + Color::PinkBackground;
 				current = current->Parent;
 			}
 			return true;
@@ -243,11 +262,9 @@ bool Pathfinder::AStar(std::vector<std::vector<Node*>>& graph, Node * start, Nod
 					continue;
 				}
 
-				closedList.push_back(toNode);
-
 				float realCost = current->RealCost + ((current->X == toNode->X || current->Y == toNode->Y) ? toNode->Cost : toNode->Cost + 0.4f); // with diagonal penalty
 				//float realCost = current->RealCost + toNode->Cost; // without diagonal penalty
-				float heuristic = sqrtf(abs((goal->X - current->X)*(goal->X - current->X) + (goal->Y - current->Y)*(goal->Y - current->Y))); // euclidean
+				float heuristic = sqrtf(abs((goal->X - toNode->X)*(goal->X - toNode->X) + (goal->Y - toNode->Y)*(goal->Y - toNode->Y))); // euclidean
 				//float heuristic = (goal->X - toNode->X) + (goal->Y - toNode->Y); //manhatten
 
 				if (toNode->IsOnOpen)
