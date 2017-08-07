@@ -2,6 +2,8 @@
 #include "PriorityQ.h"
 #include "Colors.h"
 
+int Pathfinder::TotalPathCost = 0;
+
 bool Pathfinder::BreadthFirst(std::vector<std::vector<Node*>>& graph, Node * start, Node * goal)
 {
 	std::queue<Node*> openList;
@@ -23,6 +25,7 @@ bool Pathfinder::BreadthFirst(std::vector<std::vector<Node*>>& graph, Node * sta
 			while (current != nullptr && current != start)
 			{
 				current->Color = Color::IntenseRed + Color::PinkBackground;
+				TotalPathCost += current->Cost;
 				current = current->Parent;
 			}
 
@@ -89,6 +92,7 @@ bool Pathfinder::BestFirst(std::vector<std::vector<Node*>>& graph, Node * start,
 			while (current != nullptr && current != start)
 			{
 				current->Color = Color::IntenseRed + Color::PinkBackground;
+				TotalPathCost += current->Cost;
 				current = current->Parent;
 			}
 
@@ -158,6 +162,7 @@ bool Pathfinder::Dijkstra(std::vector<std::vector<Node*>>& graph, Node * start, 
 			while (current != nullptr && current != start)
 			{
 				current->Color = Color::IntenseRed + Color::PinkBackground;
+				TotalPathCost += current->Cost;
 				current = current->Parent;
 			}
 			return true;
@@ -233,6 +238,7 @@ bool Pathfinder::AStar(std::vector<std::vector<Node*>>& graph, Node * start, Nod
 			while (current != nullptr && current != start)
 			{
 				current->Color = Color::IntenseRed + Color::PinkBackground;
+				TotalPathCost += current->Cost;
 				current = current->Parent;
 			}
 			return true;
