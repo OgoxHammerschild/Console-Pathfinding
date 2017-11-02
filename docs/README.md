@@ -6,11 +6,11 @@
 ## Content
 
 * [A\*](#A*)  
-	* [Code](#Code)  
-		* [Prerequisites](#Prerequisites)   
-			* [Nodes](#Nodes)   
-			* [Priority Queue](#Priority_Queue)   
-		* [A\*-Algorithm](#A*-Algorithm)   
+* [Code](#Code)  
+ * [Prerequisites](#Prerequisites)   
+   * [Nodes](#Nodes)   
+   * [Priority Queue](#Priority_Queue)   
+ * [A\*-Algorithm](#A*-Algorithm)   
 
 ***   
 
