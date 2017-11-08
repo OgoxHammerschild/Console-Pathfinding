@@ -26,7 +26,9 @@ public:
 
 	float RealCost;
 	float Heuristic;
-	inline float EstimateCost() const { return RealCost + Heuristic; }
+	inline float EstimateCost() const { return RealCost + Heuristic * HeuristicWeight; }
+
+	float HeuristicWeight = 1.0f;
 
 	bool IsOnOpen = false;
 
