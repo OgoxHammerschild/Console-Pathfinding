@@ -1,6 +1,8 @@
 #include <vector>
 #include "Node.h"
 #include <time.h>
+#include <chrono>
+#include <ctime>
 #include <iostream>
 #include "Windows.h"
 #include "Pathfinder.h"
@@ -20,7 +22,8 @@ int main()
 
 	map.resize(width);
 
-	srand(time(NULL));
+	//srand(time(NULL));
+	srand(1337);
 
 	for (int x = 0; x < width; x++)
 	{
@@ -41,6 +44,11 @@ int main()
 		}
 	}
 
+	// stopwatch start 
+	std::chrono::time_point<std::chrono::system_clock> start, end;
+	start = std::chrono::system_clock::now();
+	// ~stopwatch start 
+
 	switch (algorithm)
 	{
 	case 1:
@@ -58,6 +66,14 @@ int main()
 	default:
 		return 1;
 	}
+
+	// stopwatch end 
+	end = std::chrono::system_clock::now();
+
+	std::chrono::duration<double> elapsed_seconds = end - start;
+
+	std::cout << "elapsed search time: " << elapsed_seconds.count() << "s\n";
+	// ~stopwatch end 
 
 	map[1][1]->Color = Color::IntenseGreen + Color::GreenBackground;
 	map[width - 2][height - 2]->Color = Color::IntenseRed + Color::RedBackground;
@@ -79,6 +95,8 @@ int main()
 		}
 		std::cout << std::endl;
 	}
+
+	std::cout << std::endl << "Total Cost of Path (excluding Start): " << Pathfinder::TotalPathCost << " (without diagonal penalty)\n\n";
 
 	system("pause");
 

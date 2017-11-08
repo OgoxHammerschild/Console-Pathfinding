@@ -7,6 +7,11 @@
 class Pathfinder
 {
 public:
+
+	static int TotalPathCost;
+
+public:
+
 	Pathfinder();
 	~Pathfinder();
 

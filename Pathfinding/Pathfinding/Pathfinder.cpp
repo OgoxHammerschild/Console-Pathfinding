@@ -2,6 +2,8 @@
 #include "PriorityQ.h"
 #include "Colors.h"
 
+int Pathfinder::TotalPathCost = 0;
+
 bool Pathfinder::BreadthFirst(std::vector<std::vector<Node*>>& graph, Node * start, Node * goal)
 {
 	std::queue<Node*> openList;
@@ -13,14 +15,16 @@ bool Pathfinder::BreadthFirst(std::vector<std::vector<Node*>>& graph, Node * sta
 	{
 		Node* current = openList.front();
 		openList.pop();
-		current->Color = Color::Grey;
+		current->Color = Color::Red;
+		current->IsOnOpen = false;
 		closedList.push_back(current);
 
 		if (current == goal)
 		{
 			while (current != nullptr && current != start)
 			{
-				current->Color = Color::IntensePink + Color::PinkBackground;
+				current->Color = Color::IntenseRed + Color::PinkBackground;
+				TotalPathCost += current->Cost;
 				current = current->Parent;
 			}
 
@@ -46,7 +50,12 @@ bool Pathfinder::BreadthFirst(std::vector<std::vector<Node*>>& graph, Node * sta
 
 				Node* toNode = graph[X][Y];
 
-				if (!toNode->IsWalkable || toNode->IsOnOpen || std::find(closedList.begin(), closedList.end(), toNode) != closedList.end())
+				if (toNode->IsOnOpen || !toNode->IsWalkable)
+				{
+					continue;
+				}
+
+				if (std::find(closedList.begin(), closedList.end(), toNode) != closedList.end())
 				{
 					continue;
 				}
@@ -72,14 +81,16 @@ bool Pathfinder::BestFirst(std::vector<std::vector<Node*>>& graph, Node * start,
 		Node temp = openList.top();
 		Node* current = graph[temp.X][temp.Y];
 		openList.pop();
-		current->Color = Color::Grey;
+		current->Color = Color::Red;
+		current->IsOnOpen = false;
 		closedList.push_back(current);
 
 		if (current == goal)
 		{
 			while (current != nullptr && current != start)
 			{
-				current->Color = Color::IntensePink + Color::PinkBackground;
+				current->Color = Color::IntenseRed + Color::PinkBackground;
+				TotalPathCost += current->Cost;
 				current = current->Parent;
 			}
 
@@ -105,7 +116,12 @@ bool Pathfinder::BestFirst(std::vector<std::vector<Node*>>& graph, Node * start,
 
 				Node* toNode = graph[X][Y];
 
-				if (!toNode->IsWalkable || toNode->IsOnOpen || std::find(closedList.begin(), closedList.end(), toNode) != closedList.end())
+				if (toNode->IsOnOpen || !toNode->IsWalkable)
+				{
+					continue;
+				}
+
+				if (std::find(closedList.begin(), closedList.end(), toNode) != closedList.end())
 				{
 					continue;
 				}
@@ -114,7 +130,7 @@ bool Pathfinder::BestFirst(std::vector<std::vector<Node*>>& graph, Node * start,
 				toNode->Parent = current;
 				toNode->SortType = SortBy::Heuristic;
 				toNode->IsOnOpen = true;
-				openList.push(*toNode);
+				openList.push(*toNode); // resorts the priority queue
 			}
 		}
 	}
@@ -134,14 +150,16 @@ bool Pathfinder::Dijkstra(std::vector<std::vector<Node*>>& graph, Node * start, 
 		Node temp = openList.top();
 		Node *current = graph[temp.X][temp.Y];
 		openList.pop();
-		current->Color = Color::Grey;
+		current->Color = Color::Red;
+		current->IsOnOpen = false;
 		closedList.push_back(current);
 
 		if (current == goal)
 		{
 			while (current != nullptr && current != start)
 			{
-				current->Color = Color::IntensePink + Color::PinkBackground;
+				current->Color = Color::IntenseRed + Color::PinkBackground;
+				TotalPathCost += current->Cost;
 				current = current->Parent;
 			}
 			return true;
@@ -171,14 +189,14 @@ bool Pathfinder::Dijkstra(std::vector<std::vector<Node*>>& graph, Node * start, 
 					continue;
 				}
 
-				float realCost = current->RealCost + ((current->X == toNode->X || current->Y == toNode->Y) ? 1 : 1.4f);
+				float realCost = current->RealCost + ((current->X == toNode->X || current->Y == toNode->Y) ? toNode->Cost : toNode->Cost + 0.4f); // with diagonal penalty
 
 				if (toNode->IsOnOpen)
 				{
 					if (realCost < toNode->RealCost)
 					{
 						toNode->RealCost = realCost;
-						openList.Reinsert(toNode);
+						openList.Reinsert(toNode); // resorts the priority queue
 					}
 					continue;
 				}
@@ -187,7 +205,7 @@ bool Pathfinder::Dijkstra(std::vector<std::vector<Node*>>& graph, Node * start, 
 				toNode->RealCost = realCost;
 				toNode->Parent = current;
 				toNode->SortType = SortBy::RealCost;
-				openList.push(*toNode);
+				openList.push(*toNode); // resorts the priority queue
 			}
 		}
 	}
@@ -217,17 +235,18 @@ bool Pathfinder::AStar(std::vector<std::vector<Node*>>& graph, Node * start, Nod
 		Node temp = openList.top();
 		Node* current = graph[temp.X][temp.Y];
 		openList.pop();
-		current->Color = Color::Grey;
+		current->Color = Color::Red;
+		current->IsOnOpen = false;
 		closedList.push_back(current);
 
-		// if the last popped node is the goal
 		if (current == goal)
 		{
 			// the path gets traced back through the parent connections untill we reach the start
 			while (current != nullptr && current != start)
 			{
-				// nodes belonging to the path become colored pink
-				current->Color = Color::IntensePink + Color::PinkBackground;
+				// nodes belonging to the path become colored red/pink
+				current->Color = Color::IntenseRed + Color::PinkBackground;
+				TotalPathCost += current->Cost;
 				current = current->Parent;
 			}
 			return true;
@@ -268,8 +287,8 @@ bool Pathfinder::AStar(std::vector<std::vector<Node*>>& graph, Node * start, Nod
 				// and the heuristic cost for getting from this node to the goal
 				float realCost = current->RealCost + ((current->X == toNode->X || current->Y == toNode->Y) ? toNode->Cost : toNode->Cost + 0.4f); // with diagonal penalty
 				//float realCost = current->RealCost + toNode->Cost; // without diagonal penalty
-				float heuristic = sqrtf(abs((goal->X - current->X)*(goal->X - current->X) + (goal->Y - current->Y)*(goal->Y - current->Y))); // euclidean
-				//float heuristic = (goal->X - toNode->X) + (goal->Y - toNode->Y); //manhattan
+				float heuristic = sqrtf(abs((goal->X - toNode->X)*(goal->X - toNode->X) + (goal->Y - toNode->Y)*(goal->Y - toNode->Y))); // euclidean
+				//float heuristic = (goal->X - toNode->X) + (goal->Y - toNode->Y); //manhatten
 
 				// if the node is already on the open list
 				if (toNode->IsOnOpen)
@@ -281,7 +300,7 @@ bool Pathfinder::AStar(std::vector<std::vector<Node*>>& graph, Node * start, Nod
 						toNode->RealCost = realCost;
 						toNode->Heuristic = heuristic;
 						toNode->Parent = current;
-						openList.Reinsert(toNode);
+						openList.Reinsert(toNode); // resorts the priority queue
 					}
 					continue;
 				}
@@ -299,7 +318,8 @@ bool Pathfinder::AStar(std::vector<std::vector<Node*>>& graph, Node * start, Nod
 				toNode->HeuristicWeight = 4.5f;
 
 				// the node gets pushed to the open list for further investigations checking whether it's the goal 
-				// or has any neighbors that might be the goal
+				// or has any neighbors that might be the goal.
+				// this also resorts the priority queue
 				openList.push(*toNode);
 			}
 		}
