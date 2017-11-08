@@ -19,7 +19,7 @@
 # A*   
 This console application demonstrates the pathfinding algorithms BreadthFirst, BestFirst, Dijkstra and A\*. The picture below shows the result for a path searched with A\*. The green point represents the start of the path, the red point is the goal. The path itself is colored pink/purple. Grey numbers have been taken from the open list and have been investigated for a path. White numbers have not been investigated. The numbers represent both the nodes and the cost of traversing the node. Black points can not be traversed.
 
-![astar](https://raw.githubusercontent.com/OgoxHammerschild/Console-Pathfinding/master/docs/images/AStar.PNG)   
+![astar](https://raw.githubusercontent.com/OgoxHammerschild/Console-Pathfinding/master/docs/images/AStarNew.PNG)   
 
 <a name="Code"/>   
 
@@ -61,7 +61,9 @@ public:
 
 	float RealCost;
 	float Heuristic;
-	inline float EstimateCost() const { return RealCost + Heuristic; }
+	inline float EstimateCost() const { return RealCost + Heuristic * HeuristicWeight; }
+
+	float HeuristicWeight = 1.0f;
 
 	bool IsOnOpen = false;
 
@@ -117,7 +119,7 @@ This is my A\* algorithm with comments explaining it step-by-step.
 
 // the graph was prefilled and forwarded from the main(). the start and goal node are part of the graph.
 bool Pathfinder::AStar(std::vector<std::vector<Node*>>& graph, Node * start, Node * goal)
-{	
+{
 	// the open list holds the nodes that have not been investigated by the algorithm
 	PriorityQ openList;
 	// the closed list holds the investigated nodes
@@ -130,23 +132,25 @@ bool Pathfinder::AStar(std::vector<std::vector<Node*>>& graph, Node * start, Nod
 	// the search continues as long as there are uninvestigated nodes
 	while (!openList.empty())
 	{
-		// the PriorityQ holds objects instead of pointers because the comparison function of the std::priority:queue 
+		// the PriorityQ holds objects instead of pointers because the comparison function of the std::priority_queue 
 		// can not compare the objects behind pointers. instead it would compare the memory adresses itself.
 		// to make sure the node from the open list is the same as the one in the graph, the corresponding pointer is
-		// taken from the graph. popped nodes become colored grey.
+		// taken from the graph. popped nodes become colored red and pushed onto the closed list.
 		Node temp = openList.top();
 		Node* current = graph[temp.X][temp.Y];
 		openList.pop();
-		current->Color = Color::Grey;
+		current->Color = Color::Red;
+		current->IsOnOpen = false;
+		closedList.push_back(current);
 
-		// if the last popped node is the goal
 		if (current == goal)
 		{
 			// the path gets traced back through the parent connections untill we reach the start
 			while (current != nullptr && current != start)
 			{
-				// nodes belonging to the path become colored pink
-				current->Color = Color::IntensePink + Color::PinkBackground;
+				// nodes belonging to the path become colored red/pink
+				current->Color = Color::IntenseRed + Color::PinkBackground;
+				TotalPathCost += current->Cost;
 				current = current->Parent;
 			}
 			return true;
@@ -166,13 +170,13 @@ bool Pathfinder::AStar(std::vector<std::vector<Node*>>& graph, Node * start, Nod
 
 				int X = current->X + x;
 				int Y = current->Y + y;
-				
+
 				// make sure the index is still in range
 				if (X < 0 || X > graph.size() - 1 || Y < 0 || Y > graph[0].size() - 1)
 				{
 					continue;
 				}
-				
+
 				// the node you can reach from the current node (from = current, to = neighbor)
 				Node* toNode = graph[X][Y];
 
@@ -182,16 +186,13 @@ bool Pathfinder::AStar(std::vector<std::vector<Node*>>& graph, Node * start, Nod
 				{
 					continue;
 				}
-				
-				// this node will be investigated later, but it can already be put on the closed list
-				closedList.push_back(toNode);
 
 				// calculate the actual cost for getting from the start to this node 
 				// and the heuristic cost for getting from this node to the goal
 				float realCost = current->RealCost + ((current->X == toNode->X || current->Y == toNode->Y) ? toNode->Cost : toNode->Cost + 0.4f); // with diagonal penalty
 				//float realCost = current->RealCost + toNode->Cost; // without diagonal penalty
-				float heuristic = sqrtf(abs((goal->X - current->X)*(goal->X - current->X) + (goal->Y - current->Y)*(goal->Y - current->Y))); // euclidean
-				//float heuristic = (goal->X - toNode->X) + (goal->Y - toNode->Y); //manhattan
+				float heuristic = sqrtf(abs((goal->X - toNode->X)*(goal->X - toNode->X) + (goal->Y - toNode->Y)*(goal->Y - toNode->Y))); // euclidean
+				//float heuristic = (goal->X - toNode->X) + (goal->Y - toNode->Y); //manhatten
 
 				// if the node is already on the open list
 				if (toNode->IsOnOpen)
@@ -203,12 +204,11 @@ bool Pathfinder::AStar(std::vector<std::vector<Node*>>& graph, Node * start, Nod
 						toNode->RealCost = realCost;
 						toNode->Heuristic = heuristic;
 						toNode->Parent = current;
-						// and reinsert it in the list in order to resort the list with the new values
-						openList.Reinsert(toNode);
+						openList.Reinsert(toNode); // resorts the priority queue
 					}
 					continue;
 				}
-				
+
 				// the node has not been touched before, so it gets filled with information
 				toNode->Parent = current;
 				toNode->IsOnOpen = true;
@@ -216,9 +216,14 @@ bool Pathfinder::AStar(std::vector<std::vector<Node*>>& graph, Node * start, Nod
 				toNode->Heuristic = heuristic;
 				// the sort type is set to estimate because this is what it's sorted by when using A*
 				toNode->SortType = SortBy::Estimate;
+				// the heuristic weight gives a higher or lower value to the heuristic cost. 
+				// a weight of 4.5 allows better results than a weight of 1, if we are using
+				// the currently randomly filled graph/map
+				toNode->HeuristicWeight = 4.5f;
 
 				// the node gets pushed to the open list for further investigations checking whether it's the goal 
-				// or has any neighbors that might be the goal
+				// or has any neighbors that might be the goal.
+				// this also resorts the priority queue
 				openList.push(*toNode);
 			}
 		}
@@ -230,13 +235,12 @@ bool Pathfinder::AStar(std::vector<std::vector<Node*>>& graph, Node * start, Nod
 ```   
 ***   
 
-Further readings:    
+Further pages:    
 
 * [Etos Videos](https://ogoxhammerschild.github.io/Etos/)    
-* [Dynamic Delegate (C++)](https://ogoxhammerschild.github.io/)   
-* [Component System (C++)](https://ogoxhammerschild.github.io/#Component_System)    
 * [CollisionManager for the MonoGame-Framework (C#)](https://ogoxhammerschild.github.io/Collision/)    
-* [Unreal Examples (C++)](https://ogoxhammerschild.github.io/Unreal-Examples/)   
+* [Dynamic Delegate (C++)](https://ogoxhammerschild.github.io/DynamicDelegate/)    
 
 ***    
 
+[Back to Main Page](https://ogoxhammerschild.github.io/)    

@@ -231,7 +231,7 @@ bool Pathfinder::AStar(std::vector<std::vector<Node*>>& graph, Node * start, Nod
 		// the PriorityQ holds objects instead of pointers because the comparison function of the std::priority_queue 
 		// can not compare the objects behind pointers. instead it would compare the memory adresses itself.
 		// to make sure the node from the open list is the same as the one in the graph, the corresponding pointer is
-		// taken from the graph. popped nodes become colored grey and pushed onto the closed list.
+		// taken from the graph. popped nodes become colored red and pushed onto the closed list.
 		Node temp = openList.top();
 		Node* current = graph[temp.X][temp.Y];
 		openList.pop();
