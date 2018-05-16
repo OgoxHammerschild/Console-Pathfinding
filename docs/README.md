@@ -192,7 +192,7 @@ bool Pathfinder::AStar(std::vector<std::vector<Node*>>& graph, Node * start, Nod
 	    	float realCost = current->RealCost + ((current->X == toNode->X || current->Y == toNode->Y) ? toNode->Cost : toNode->Cost + 0.4f); // with diagonal penalty
 		//float realCost = current->RealCost + toNode->Cost; // without diagonal penalty
 		float heuristic = sqrtf(abs((goal->X - toNode->X)*(goal->X - toNode->X) + (goal->Y - toNode->Y)*(goal->Y - toNode->Y))); // euclidean
-		//float heuristic = (goal->X - toNode->X) + (goal->Y - toNode->Y); //manhatte
+		//float heuristic = (goal->X - toNode->X) + (goal->Y - toNode->Y); //manhattan
 		// if the node is already on the open list
 		if (toNode->IsOnOpen)
 		{
