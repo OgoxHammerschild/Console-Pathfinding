@@ -206,25 +206,26 @@ bool Pathfinder::AStar(std::vector<std::vector<Node*>>& graph, Node * start, Nod
 		    	openList.Reinsert(toNode); // resorts the priority queue
 		    }
 		    continue;
+		}
 		
-		    // the node has not been touched before, so it gets filled with information
-		    toNode->Parent = current;
-		    toNode->IsOnOpen = true;
-		    toNode->RealCost = realCost;
-		    toNode->Heuristic = heuristic;
-		    // the sort type is set to estimate because this is what it's sorted by when using A*
-		    toNode->SortType = SortBy::Estimate;
-		    // the heuristic weight gives a higher or lower value to the heuristic cost. 
-		    // a weight of 4.5 allows better results than a weight of 1, if we are using
-		    // the currently randomly filled graph/map
-		    toNode->HeuristicWeight = 4.5f
-		    // the node gets pushed to the open list for further investigations checking whether it's the goal 
-		    // or has any neighbors that might be the goal.
-		    // this also resorts the priority queue
-		    openList.push(*toNode);
-                }
+		// the node has not been touched before, so it gets filled with information
+		toNode->Parent = current;
+		toNode->IsOnOpen = true;
+		toNode->RealCost = realCost;
+		toNode->Heuristic = heuristic;
+		// the sort type is set to estimate because this is what it's sorted by when using A*
+		toNode->SortType = SortBy::Estimate;
+		// the heuristic weight gives a higher or lower value to the heuristic cost. 
+		// a weight of 4.5 allows better results than a weight of 1, if we are using
+		// the currently randomly filled graph/map
+		toNode->HeuristicWeight = 4.5f
+		// the node gets pushed to the open list for further investigations checking whether it's the goal 
+		// or has any neighbors that might be the goal.
+		// this also resorts the priority queue
+		openList.push(*toNode);
             }
         }
+    }
 
     // there is no path
     return false;
