@@ -1,11 +1,13 @@
-#include <vector>
+// (c) Daniel Bortfeld 2018
 #include "Node.h"
+#include "Pathfinder.h"
+
+#include <vector>
 #include <time.h>
 #include <chrono>
 #include <ctime>
 #include <iostream>
-#include "Windows.h"
-#include "Pathfinder.h"
+#include <Windows.h>
 
 int main()
 {

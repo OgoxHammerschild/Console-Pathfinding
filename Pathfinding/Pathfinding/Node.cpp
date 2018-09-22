@@ -1,3 +1,4 @@
+// (c) Daniel Bortfeld 2018
 #include "Node.h"
 
 bool Node::operator>(Node const & other) const

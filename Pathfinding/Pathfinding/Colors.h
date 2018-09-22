@@ -1,3 +1,5 @@
+// (c) Daniel Bortfeld 2018
+#pragma once
 #ifndef COLORS_H
 #define COLORS_H
 

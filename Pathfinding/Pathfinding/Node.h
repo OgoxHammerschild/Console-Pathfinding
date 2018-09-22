@@ -1,3 +1,5 @@
+// (c) Daniel Bortfeld 2018
+#pragma once
 #ifndef NODE_H
 #define NODE_H
 
@@ -16,7 +18,7 @@ public:
 
 	int X;
 	int Y;
-	
+
 	bool IsWalkable;
 
 	int Cost;
@@ -36,11 +38,11 @@ public:
 
 public:
 
-	Node() {}
+	Node() = default;
 
 	Node(int x, int y, int cost, bool walkable) : X(x), Y(y), Cost(cost), IsWalkable(walkable) {}
 
-	~Node() {}
+	virtual ~Node() = default;
 
 	bool operator> (Node const& other)const;
 };

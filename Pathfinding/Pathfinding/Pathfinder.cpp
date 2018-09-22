@@ -1,3 +1,4 @@
+// (c) Daniel Bortfeld 2018
 #include "Pathfinder.h"
 #include "PriorityQ.h"
 #include "Colors.h"

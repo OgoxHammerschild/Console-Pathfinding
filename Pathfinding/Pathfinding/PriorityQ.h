@@ -1,3 +1,5 @@
+// (c) Daniel Bortfeld 2018
+#pragma once
 #ifndef PRIORITYQ_H
 #define PRIORITYQ_H
 

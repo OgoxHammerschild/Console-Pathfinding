@@ -1,3 +1,4 @@
+// (c) Daniel Bortfeld 2018
 #include "PriorityQ.h"
 
 auto PriorityQ::Find(Node * node)
